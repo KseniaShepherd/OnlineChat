@@ -7,21 +7,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MessageWriter extends Thread {
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+
     private Client client;
     private BufferedWriter out;
-   private BufferedReader inputUser;
+    private BufferedReader inputUser;
     private String name;
-    private Date time;
-    private String dtime;
-    private SimpleDateFormat dt1;
 
     public MessageWriter(BufferedWriter out, BufferedReader inputUser, String name, Client client) {
         this.out = out;
         this.inputUser = inputUser;
         this.name = name;
-        this.time = new Date();
-        this.dt1 = new SimpleDateFormat("HH:mm:ss");
-        this.dtime = dt1.format(time);
         this.client = client;
     }
 
@@ -30,11 +26,7 @@ public class MessageWriter extends Thread {
         while (true) {
             String userWord;
             try {
-
-                time = new Date();
-                dt1 = new SimpleDateFormat("HH:mm:ss");
-                dtime = dt1.format(time);
-                System.out.println("Введите сообщение:");
+                String dtime = SIMPLE_DATE_FORMAT.format(new Date());
                 userWord = inputUser.readLine();
                 client.getLogger().info(userWord);
                 if ("exit".equals(userWord)) {

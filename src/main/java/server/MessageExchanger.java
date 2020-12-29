@@ -5,15 +5,15 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class SocketHandler extends Thread {
+public class MessageExchanger extends Thread {
 
-    private List<SocketHandler> list;
+    private List<MessageExchanger> list;
     private BufferedReader in;
     private BufferedWriter out;
     private Socket socket;
     private Logger logger;
 
-    public SocketHandler(Socket socket, List<SocketHandler> list, Logger logger) throws IOException {
+    public MessageExchanger(Socket socket, List<MessageExchanger> list, Logger logger) throws IOException {
         this.list = list;
         this.socket = socket;
         this.logger = logger;
@@ -42,8 +42,8 @@ public class SocketHandler extends Thread {
                         break;
                     }
                     System.out.println(word);
-                    for (SocketHandler vr :list) {
-                        vr.send(word);
+                    for (MessageExchanger exchanger :list) {
+                        exchanger.send(word);
                     }
                 }
             } catch (NullPointerException e) {
@@ -54,7 +54,8 @@ public class SocketHandler extends Thread {
         }
     }
 
-    private void send(String msg) {
+    public void send(String msg) {
+        System.out.println("Method send is called with message: " + msg);
         try {
             out.write(msg + "\n");
             out.flush();
@@ -69,8 +70,10 @@ public class SocketHandler extends Thread {
                 socket.close();
                 in.close();
                 out.close();
-                for (SocketHandler vr : list) {
-                    if (vr.equals(this)) vr.interrupt();
+                for (MessageExchanger exchanger : list) {
+                    if (exchanger.equals(this)) {
+                        exchanger.interrupt();
+                    }
                     list.remove(this);
                 }
             }

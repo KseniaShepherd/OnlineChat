@@ -6,16 +6,16 @@ import utils.Util;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 public class Server {
     private static final String PORT = "port";
     private static final String SETTINGS_FILE = "src/main/resources/settings.properties";
 
-    private static List<SocketHandler> socketHandlers = new LinkedList<>();
+    private static List<MessageExchanger> messageExchangers = new CopyOnWriteArrayList<>();
 
     public static void main(String[] args) throws IOException {
         Properties settings = Util.loadProperties(SETTINGS_FILE);
@@ -27,9 +27,9 @@ public class Server {
             while (true) {
                 Socket socket = server.accept();
                 try {
-                    SocketHandler socketHandler = new SocketHandler(socket, socketHandlers,logger);
-                    socketHandlers.add(socketHandler);
-                    socketHandler.start();
+                    MessageExchanger messageExchanger = new MessageExchanger(socket, messageExchangers,logger);
+                    messageExchangers.add(messageExchanger);
+                    messageExchanger.start();
                 } catch (IOException e) {
                     socket.close();
                 }
